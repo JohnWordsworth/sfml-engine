@@ -19,6 +19,7 @@ namespace gbh
 	class Node : public sf::Transformable, public std::enable_shared_from_this<Node>
 	{
 		friend class gbh::Game;
+		friend class gbh::Scene;
 	
 	public:
 		virtual ~Node();
@@ -44,8 +45,8 @@ namespace gbh
 	protected:
 		void setScene(Scene* scene);
 
-		virtual void update(const sf::Time& deltaTime);
-		virtual void draw(sf::RenderTarget& target, const sf::Transform& parentTransform) const;
+		void update(const sf::Time& deltaTime);
+		void draw(sf::RenderTarget& target, const sf::Transform& parentTransform) const;
 
 		virtual void onUpdate(const sf::Time& deltaTime);
 		virtual void onDraw(sf::RenderTarget& target, const sf::Transform& transform) const;
@@ -56,7 +57,6 @@ namespace gbh
 		Scene* m_scene = nullptr;
 		Node* m_parent = nullptr;
 		std::vector<std::shared_ptr<Node>> m_children;
-		//std::shared_ptr<PhysicsBody> m_physicsBody;
 	};
 
 } // namespace

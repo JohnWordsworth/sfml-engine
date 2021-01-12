@@ -33,18 +33,6 @@ gbh::Scene* gbh::Node::getScene()
 }
 
 
-//void gbh::Node::setPhysicsBody(const std::shared_ptr<gbh::PhysicsBody>& body)
-//{
-//	m_physicsBody = body;
-//}
-//
-//
-//const std::shared_ptr<gbh::PhysicsBody>& gbh::Node::getPhysicsBody()
-//{
-//	return m_physicsBody;
-//}
-
-
 sf::FloatRect gbh::Node::getLocalBounds() const
 {
 	return sf::FloatRect();
@@ -80,7 +68,7 @@ sf::Transform gbh::Node::getGlobalTransform() const
 
 std::shared_ptr<gbh::Node> gbh::Node::getNodeAtPoint(const sf::Vector2f& point)
 {
-	std::shared_ptr<gbh::Node> node = shared_from_this();
+	gbh::Node* node = this;
 	sf::Transform parentTransform = sf::Transform();
 	bool searching = true;
 
@@ -99,7 +87,7 @@ std::shared_ptr<gbh::Node> gbh::Node::getNodeAtPoint(const sf::Vector2f& point)
 
 			if (bounds.contains(point))
 			{
-				node = node->m_children[i];
+				node = node->m_children[i].get();
 				parentTransform = transform;
 				searching = true;
 				break;
@@ -107,11 +95,11 @@ std::shared_ptr<gbh::Node> gbh::Node::getNodeAtPoint(const sf::Vector2f& point)
 		}
 	}
 
-	if (node.get() == this) {
+	if (node == this) {
 		return nullptr;
 	}
 
-	return node;
+	return node->shared_from_this();
 }
 
 

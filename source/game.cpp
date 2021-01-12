@@ -74,7 +74,7 @@ void gbh::Game::run(const std::string& firstScene)
 		sf::Time elapsedTime = clock.restart();
 
 		m_currentScene->update(elapsedTime);
-		m_currentScene->draw(*m_window, sf::Transform());
+		m_currentScene->draw(*m_window);
 
 		m_window->display();
 	}

@@ -17,7 +17,7 @@ namespace gbh {
 
 	class CameraNode;
 
-	class Scene : public gbh::Node
+	class Scene
 	{
 		friend class gbh::Game;
 
@@ -37,8 +37,10 @@ namespace gbh {
 		std::shared_ptr<CameraNode> getCamera();
 		sf::Transform getCameraTransform() const;
 
-		virtual void update(sf::Time deltaTime);
-		virtual void draw(sf::RenderTarget& target, const sf::Transform& parentTransform) const;
+		void update(sf::Time deltaTime);
+		void draw(sf::RenderTarget& target) const;
+
+		void addChild(const std::shared_ptr<gbh::Node>& node);
 
 		std::shared_ptr<Node> getNodeAtViewPoint(const sf::Vector2f& point);
 		std::shared_ptr<Node> getNodeAtViewPoint(float x, float y);
@@ -57,9 +59,8 @@ namespace gbh {
 		virtual void onJoystickEvent(sf::Event& event);
 
 	private:
+		Node m_rootNode;
 		std::shared_ptr<CameraNode> m_camera;
-		//std::unique_ptr<PhysicsWorld> m_physicsWorld;
-
 		bool m_initialized = false;
 	};
 

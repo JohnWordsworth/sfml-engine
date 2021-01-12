@@ -7,7 +7,7 @@
 
 gbh::Scene::Scene()
 {
-	setScene(this);
+	m_rootNode.setScene(this);
 }
 
 
@@ -50,23 +50,6 @@ void gbh::Scene::destroy()
 }
 
 
-//void gbh::Scene::createPhysicsWorld(sf::Vector2f gravity)
-//{
-//	if (m_physicsWorld != nullptr) {
-//		std::cout << "PhysicsWorld Already Exists!\n";
-//		return;
-//	}
-//
-//	m_physicsWorld = std::make_unique<PhysicsWorld>(gravity);
-//}
-//
-//
-//gbh::PhysicsWorld* gbh::Scene::getPhysicsWorld()
-//{
-//	return m_physicsWorld.get();
-//}
-
-
 void gbh::Scene::setCamera(std::shared_ptr<CameraNode> cameraNode)
 {
 	m_camera = cameraNode;
@@ -98,20 +81,26 @@ sf::Transform gbh::Scene::getCameraTransform() const
 
 void gbh::Scene::update(sf::Time deltaTime)
 {
-	Node::update(deltaTime);
+	m_rootNode.update(deltaTime);
 }
 
 
-void gbh::Scene::draw(sf::RenderTarget& target, const sf::Transform& parentTransform) const
+void gbh::Scene::draw(sf::RenderTarget& target) const
 {
 	if (m_camera == nullptr) 
 	{
-		Node::draw(target, parentTransform);
+		m_rootNode.draw(target, sf::Transform());
 		return;
 	}
 
-	sf::Transform transform = getCameraTransform().getInverse() * parentTransform;
-	Node::draw(target, transform);
+	sf::Transform transform = getCameraTransform().getInverse();
+	m_rootNode.draw(target, transform);
+}
+
+
+void gbh::Scene::addChild(const std::shared_ptr<gbh::Node>& node)
+{
+	m_rootNode.addChild(node);
 }
 
 
@@ -119,7 +108,7 @@ std::shared_ptr<gbh::Node> gbh::Scene::getNodeAtViewPoint(const sf::Vector2f& po
 {
 	sf::Transform transform = getCameraTransform();
 	sf::Vector2f scenePoint = transform.transformPoint(point);
-	return getNodeAtPoint(scenePoint);
+	return m_rootNode.getNodeAtPoint(scenePoint);
 }
 
 
