@@ -37,16 +37,21 @@ namespace gbh {
 		std::shared_ptr<CameraNode> getCamera();
 		sf::Transform getCameraTransform() const;
 
-		void update(sf::Time deltaTime);
+		void update(double deltaTime);
 		void draw(sf::RenderTarget& target) const;
 
-		void addChild(const std::shared_ptr<gbh::Node>& node);
-
+        void addChild(const std::shared_ptr<gbh::Node>& node);
+        int getChildCount() const;
+        std::shared_ptr<Node> getChildAtIndex(int index);
+        std::shared_ptr<Node> getFirstChildWithName(const std::string& name, bool recursive);
+        void removeChild(int index, bool immediate);
+        void removeChildrenWithName(const std::string& name, bool immediate);
+        
 		std::shared_ptr<Node> getNodeAtViewPoint(const sf::Vector2f& point);
 		std::shared_ptr<Node> getNodeAtViewPoint(float x, float y);
 		
 	protected:
-		virtual void onUpdate(const sf::Time& deltaTime);
+		virtual void onUpdate(double deltaTime);
 		virtual void onDraw(sf::RenderTarget& target, const sf::Transform& transform) const;
 
 		virtual void onInitializeScene();

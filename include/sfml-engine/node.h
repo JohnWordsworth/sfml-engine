@@ -23,11 +23,22 @@ namespace gbh
 	
 	public:
 		virtual ~Node();
+        
 		void addChild(std::shared_ptr<Node> node);
-
+        int getChildCount() const;
+        std::shared_ptr<Node> getChildAtIndex(int index);
+        std::shared_ptr<Node> getFirstChildWithName(const std::string& name, bool recursive);
+        void removeChild(int index, bool immediate);
+        void removeChildrenWithName(const std::string& name, bool immediate);
+        void removeFromParent(bool immediate);
+        
 		void setName(const std::string& name);
 		const std::string& getName() const;
-	
+        
+        void setOrigin(float x, float y);
+        void setOrigin(const sf::Vector2f& origin);
+        const sf::Vector2f& getOrigin() const;
+        	
 		Scene* getScene();
 
 		//void setPhysicsBody(const std::shared_ptr<PhysicsBody>& body);
@@ -45,18 +56,22 @@ namespace gbh
 	protected:
 		void setScene(Scene* scene);
 
-		void update(const sf::Time& deltaTime);
+		void update(double deltaTime);
 		void draw(sf::RenderTarget& target, const sf::Transform& parentTransform) const;
 
-		virtual void onUpdate(const sf::Time& deltaTime);
+		virtual void onUpdate(double deltaTime);
 		virtual void onDraw(sf::RenderTarget& target, const sf::Transform& transform) const;
 
 	
 	private:
+        void updateAbsoluteOrigin();
+        
 		std::string m_name;
 		Scene* m_scene = nullptr;
 		Node* m_parent = nullptr;
+        sf::Vector2f m_relativeOrigin;
 		std::vector<std::shared_ptr<Node>> m_children;
+        bool m_removeInNextUpdate = false;
 	};
 
 } // namespace

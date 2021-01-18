@@ -79,8 +79,9 @@ sf::Transform gbh::Scene::getCameraTransform() const
 }
 
 
-void gbh::Scene::update(sf::Time deltaTime)
+void gbh::Scene::update(double deltaTime)
 {
+    onUpdate(deltaTime);
 	m_rootNode.update(deltaTime);
 }
 
@@ -100,8 +101,39 @@ void gbh::Scene::draw(sf::RenderTarget& target) const
 
 void gbh::Scene::addChild(const std::shared_ptr<gbh::Node>& node)
 {
-	m_rootNode.addChild(node);
+    return m_rootNode.addChild(node);
 }
+
+
+int gbh::Scene::getChildCount() const
+{
+    return m_rootNode.getChildCount();
+}
+
+
+std::shared_ptr<gbh::Node> gbh::Scene::getChildAtIndex(int index)
+{
+    return m_rootNode.getChildAtIndex(index);
+}
+
+
+std::shared_ptr<gbh::Node> gbh::Scene::getFirstChildWithName(const std::string& name, bool recursive)
+{
+    return m_rootNode.getFirstChildWithName(name, recursive);
+}
+
+
+void gbh::Scene::removeChild(int index, bool immediate)
+{
+    return m_rootNode.removeChild(index, immediate);
+}
+
+
+void gbh::Scene::removeChildrenWithName(const std::string& name, bool immediate)
+{
+    return m_rootNode.removeChildrenWithName(name, immediate);
+}
+
 
 
 std::shared_ptr<gbh::Node> gbh::Scene::getNodeAtViewPoint(const sf::Vector2f& point)
@@ -118,7 +150,7 @@ std::shared_ptr<gbh::Node> gbh::Scene::getNodeAtViewPoint(float x, float y)
 }
 
 
-void gbh::Scene::onUpdate(const sf::Time& deltaTime) { }
+void gbh::Scene::onUpdate(double deltaTime) { }
 void gbh::Scene::onDraw(sf::RenderTarget& target, const sf::Transform& transform) const { }
 
 void gbh::Scene::onInitializeScene() { }

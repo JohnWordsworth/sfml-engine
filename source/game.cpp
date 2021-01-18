@@ -16,11 +16,11 @@ void gbh::Game::run(const std::string& firstScene)
 	m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(m_windowSize.x, m_windowSize.y), "SFML Engine Game");
 	m_window->setVerticalSyncEnabled(true);
 
+    sf::Clock clock;
+    sf::Event event;
+
 	while (m_window->isOpen())
 	{
-		sf::Clock clock;
-		sf::Event event;
-
 		while (m_window->pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -72,8 +72,12 @@ void gbh::Game::run(const std::string& firstScene)
 		}
 
 		sf::Time elapsedTime = clock.restart();
+        double deltaTime = elapsedTime.asSeconds();
+        
+        // Limit delta time to 0.25s - incase the application stalls for a while
+        deltaTime = (deltaTime > 0.25f) ? 0.25f : deltaTime;
 
-		m_currentScene->update(elapsedTime);
+        m_currentScene->update(elapsedTime.asSeconds());
 		m_currentScene->draw(*m_window);
 
 		m_window->display();
@@ -97,6 +101,12 @@ void gbh::Game::changeScene(const std::string& name)
 
 	m_nextScene = m_scenes[name];
 	m_changeScene = true;
+}
+
+
+const std::shared_ptr<gbh::Scene>& gbh::Game::getCurrentScene() const
+{
+    return m_currentScene;
 }
 
 

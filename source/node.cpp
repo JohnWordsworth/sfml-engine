@@ -15,6 +15,113 @@ void gbh::Node::addChild(std::shared_ptr<Node> node)
 }
 
 
+int gbh::Node::getChildCount() const
+{
+    return m_children.size();
+}
+
+
+std::shared_ptr<gbh::Node> gbh::Node::getChildAtIndex(int index)
+{
+    if (index >= 0 && index < m_children.size())
+    {
+        return m_children[index];
+    }
+    
+    return nullptr;
+}
+
+
+std::shared_ptr<gbh::Node> gbh::Node::getFirstChildWithName(const std::string& name, bool recursive)
+{
+    for(int i = 0; i < m_children.size(); ++i)
+    {
+        if (m_children[i]->getName() == name)
+        {
+            return m_children[i];
+        }
+    }
+    
+    if (recursive)
+    {
+        for(int i = 0; i < m_children.size(); ++i)
+        {
+            std::shared_ptr<gbh::Node> result = m_children[i]->getFirstChildWithName(name, recursive);
+            
+            if (result)
+            {
+                return result;
+            }
+        }
+    }
+    
+    return nullptr;
+}
+
+
+void gbh::Node::removeChild(int index, bool immediate)
+{
+    if (immediate)
+    {
+        m_children.erase(m_children.begin() + index);
+    }
+    else
+    {
+        m_children[index]->m_removeInNextUpdate = true;
+    }
+}
+
+
+void gbh::Node::removeChildrenWithName(const std::string& name, bool immediate)
+{
+    std::vector<int> itemsToRemove;
+    
+    for(int i = 0; i < m_children.size(); ++i)
+    {
+        if (m_children[i]->getName() == name)
+        {
+            if (immediate)
+            {
+                itemsToRemove.push_back(i);
+            }
+            else
+            {
+                m_children[i]->m_removeInNextUpdate = true;
+            }
+        }
+    }
+    
+    // Remove from back, so that all of the indices are still valid
+    for(int i = (int)itemsToRemove.size() - 1; i >= 0; ++i)
+    {
+        m_children.erase(m_children.begin() + i);
+    }
+}
+
+
+void gbh::Node::removeFromParent(bool immediate)
+{
+    if (immediate)
+    {
+        if (m_parent != nullptr)
+        {
+            for(int i = 0; i < m_parent->m_children.size(); ++i)
+            {
+                if (m_parent->m_children[i].get() == this)
+                {
+                    m_parent->m_children.erase(m_parent->m_children.begin() + i);
+                }
+            }
+        }
+    }
+    else
+    {
+        m_removeInNextUpdate = false;
+    }
+}
+
+
+
 void gbh::Node::setName(const std::string& name)
 {
 	m_name = name;
@@ -24,6 +131,26 @@ void gbh::Node::setName(const std::string& name)
 const std::string& gbh::Node::getName() const
 {
 	return m_name;
+}
+
+
+void gbh::Node::setOrigin(float x, float y)
+{
+    m_relativeOrigin = sf::Vector2f(x, y);
+    updateAbsoluteOrigin();
+}
+
+
+void gbh::Node::setOrigin(const sf::Vector2f& origin)
+{
+    m_relativeOrigin = origin;
+    updateAbsoluteOrigin();
+}
+
+
+const sf::Vector2f& gbh::Node::getOrigin() const
+{
+    return m_relativeOrigin;
 }
 
 
@@ -109,10 +236,21 @@ std::shared_ptr<gbh::Node> gbh::Node::getNodeAtPoint(float x, float y)
 }
 
 
-void gbh::Node::update(const sf::Time& deltaTime)
+void gbh::Node::update(double deltaTime)
 {
+    // Remove all nodes marked for deletion
+    for(int i = (int)m_children.size() - 1; i >= 0; --i)
+    {
+        if (m_children[i]->m_removeInNextUpdate)
+        {
+            m_children.erase(m_children.begin() + i);
+        }
+    }
+    
+    // Call the 'onUpdate' virtual method
 	onUpdate(deltaTime);
 	
+    // Update all children
 	for(std::size_t i = 0; i < m_children.size(); ++i) {
 		m_children[i]->update(deltaTime);
 	}
@@ -141,7 +279,7 @@ void gbh::Node::setScene(gbh::Scene* scene)
 }
 
 
-void gbh::Node::onUpdate(const sf::Time& deltaTime)
+void gbh::Node::onUpdate(double deltaTime)
 {
 	// Subclasses of the base node should use this to update themselves
 }
@@ -150,4 +288,12 @@ void gbh::Node::onUpdate(const sf::Time& deltaTime)
 void gbh::Node::onDraw(sf::RenderTarget& target, const sf::Transform& transform) const
 {
 	// Subclasses of the base node use this to draw their contents
+}
+
+
+void gbh::Node::updateAbsoluteOrigin()
+{
+    sf::FloatRect bounds = getLocalBounds();
+    sf::Vector2f absoluteOrigin = sf::Vector2f(m_relativeOrigin.x * bounds.width, m_relativeOrigin.y * bounds.height);
+    sf::Transformable::setOrigin(absoluteOrigin);
 }
