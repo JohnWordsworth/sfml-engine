@@ -23,6 +23,7 @@ namespace gbh
 		void changeScene(const std::string& name);
         const std::shared_ptr<gbh::Scene>& getCurrentScene() const;
 
+        sf::RenderWindow* getRenderWindow() { return m_window.get(); }
 		sf::Vector2i getWindowSize();
 
 	private:

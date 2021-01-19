@@ -82,20 +82,31 @@ sf::Transform gbh::Scene::getCameraTransform() const
 void gbh::Scene::update(double deltaTime)
 {
     onUpdate(deltaTime);
+    simulatePhysics(deltaTime);
 	m_rootNode.update(deltaTime);
 }
 
 
 void gbh::Scene::draw(sf::RenderTarget& target) const
 {
-	if (m_camera == nullptr) 
+    sf::Transform rootTransform;
+    
+	if (m_camera != nullptr)
 	{
-		m_rootNode.draw(target, sf::Transform());
-		return;
+        rootTransform = getCameraTransform().getInverse();
 	}
 
-	sf::Transform transform = getCameraTransform().getInverse();
-	m_rootNode.draw(target, transform);
+	m_rootNode.draw(target, rootTransform);
+    
+    if (m_physicsWorld)
+    {
+        static bool g_debugPhysics = true;
+        
+        if (g_debugPhysics)
+        {
+            m_physicsWorld->getBoxWorld()->DebugDraw();
+        }
+    }
 }
 
 
@@ -147,6 +158,47 @@ std::shared_ptr<gbh::Node> gbh::Scene::getNodeAtViewPoint(const sf::Vector2f& po
 std::shared_ptr<gbh::Node> gbh::Scene::getNodeAtViewPoint(float x, float y)
 {
 	return getNodeAtViewPoint(sf::Vector2f(x, y));
+}
+
+
+void gbh::Scene::createPhysicsWorld(const sf::Vector2f& gravity)
+{
+    m_physicsWorld = std::make_unique<PhysicsWorld>(gravity);
+    m_physicsDebug = std::make_unique<SfmlBoxDebugDraw>(Game::getInstance().getRenderWindow(), this);
+    m_physicsDebug->SetFlags(b2Draw::e_shapeBit);
+    m_physicsWorld->getBoxWorld()->SetDebugDraw(m_physicsDebug.get());
+}
+
+
+void gbh::Scene::simulatePhysics(double deltaTime)
+{
+    if (m_physicsWorld == nullptr) {
+        return;
+    }
+    
+    // For any objects that have had their position update, push those changes to the physics world
+    m_rootNode.runAction(true, [](Node& node) {
+        if (node.m_physicsBody == nullptr) {
+            return;
+        }
+        
+        if (node.m_physicsTransformDirty)
+        {
+            node.updatePhysicsTransform();
+        }
+    });
+    
+    // Run the physics simulation
+    m_physicsWorld->simulate(deltaTime);
+    
+    // Udpate any objects that have a physics body attached
+    m_rootNode.runAction(true, [](Node& node) {
+        if (node.m_physicsBody == nullptr) {
+            return;
+        }
+        
+        node.updateTransformFromPhysics();
+    });
 }
 
 

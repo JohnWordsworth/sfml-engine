@@ -1,5 +1,8 @@
 #include "sfml-engine/node.h"
 
+#include "sfml-engine/physics/physicsworld.h"
+
+
 
 gbh::Node::~Node() 
 {
@@ -134,6 +137,27 @@ const std::string& gbh::Node::getName() const
 }
 
 
+void gbh::Node::setPosition(const sf::Vector2f position)
+{
+    Transformable::setPosition(position);
+    m_physicsTransformDirty = true;
+}
+
+
+void gbh::Node::setPosition(float x, float y)
+{
+    Transformable::setPosition(x, y);
+    m_physicsTransformDirty = true;
+}
+
+
+void gbh::Node::setRotation(float angle)
+{
+    Transformable::setRotation(angle);
+    m_physicsTransformDirty = true;
+}
+
+
 void gbh::Node::setOrigin(float x, float y)
 {
     m_relativeOrigin = sf::Vector2f(x, y);
@@ -160,6 +184,19 @@ gbh::Scene* gbh::Node::getScene()
 }
 
 
+void gbh::Node::setPhysicsBody(const std::shared_ptr<PhysicsBody>& body)
+{
+    m_physicsBody = body;
+    m_physicsTransformDirty = true;
+}
+
+
+const std::shared_ptr<gbh::PhysicsBody>& gbh::Node::getPhysicsBody()
+{
+    return m_physicsBody;
+}
+
+
 sf::FloatRect gbh::Node::getLocalBounds() const
 {
 	return sf::FloatRect();
@@ -175,7 +212,9 @@ sf::FloatRect gbh::Node::getGlobalBounds() const
 
 sf::Transform gbh::Node::getGlobalTransform() const
 {
-	std::vector<sf::Transform> transforms;
+    // Expensive - should probably cache these
+    
+    std::vector<sf::Transform> transforms;
 	const Node* node = this;
 
 	while (node != nullptr) {
@@ -236,6 +275,20 @@ std::shared_ptr<gbh::Node> gbh::Node::getNodeAtPoint(float x, float y)
 }
 
 
+void gbh::Node::runAction(bool recursive, std::function<void (Node&)> action)
+{
+    action(*this);
+    
+    if (recursive)
+    {
+        for(int i = 0; i < m_children.size(); ++i)
+        {
+            m_children[i]->runAction(recursive, action);
+        }
+    }
+}
+
+
 void gbh::Node::update(double deltaTime)
 {
     // Remove all nodes marked for deletion
@@ -265,6 +318,33 @@ void gbh::Node::draw(sf::RenderTarget &target, const sf::Transform &parentTransf
 	for(std::size_t i = 0; i < m_children.size(); ++i) {
 		m_children[i]->draw(target, combinedTransform);
 	}
+}
+
+
+void gbh::Node::updatePhysicsTransform()
+{
+    sf::Transform transform = m_parent->getGlobalTransform();
+    sf::Vector2f globalPosition = transform.transformPoint(getPosition());
+    globalPosition.y = -globalPosition.y;
+    
+    m_physicsBody->setTransform(globalPosition, getRotation());
+    m_physicsTransformDirty = false;
+}
+
+
+void gbh::Node::updateTransformFromPhysics()
+{
+    if (m_physicsBody)
+    {
+        sf::Transform transform = m_parent->getGlobalTransform().getInverse();
+        
+        sf::Vector2f globalPosition = m_physicsBody->getPosition();
+        globalPosition.y = -globalPosition.y;
+        sf::Vector2f localPosition = transform.transformPoint(globalPosition);
+        
+        Transformable::setPosition(localPosition);
+        Transformable::setRotation(m_physicsBody->getAngle());
+    }
 }
 
 

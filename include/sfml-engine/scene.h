@@ -9,8 +9,9 @@
 #include "spritenode.h"
 #include "textnode.h"
 
-//#include "physics/physicsworld.h"
-//#include "physics/physicsbody.h"
+#include "physics/debugdraw.h"
+#include "physics/physicsworld.h"
+#include "physics/physicsbody.h"
 
 
 namespace gbh {
@@ -49,6 +50,10 @@ namespace gbh {
         
 		std::shared_ptr<Node> getNodeAtViewPoint(const sf::Vector2f& point);
 		std::shared_ptr<Node> getNodeAtViewPoint(float x, float y);
+        
+        void createPhysicsWorld(const sf::Vector2f& gravity);
+        PhysicsWorld* getPhysicsWorld() const { return m_physicsWorld.get(); }
+        void simulatePhysics(double deltaTime);
 		
 	protected:
 		virtual void onUpdate(double deltaTime);
@@ -66,7 +71,9 @@ namespace gbh {
 	private:
 		Node m_rootNode;
 		std::shared_ptr<CameraNode> m_camera;
-		bool m_initialized = false;
+        std::unique_ptr<PhysicsWorld> m_physicsWorld;
+        std::unique_ptr<SfmlBoxDebugDraw> m_physicsDebug;
+        bool m_initialized = false;
 	};
 
 } // namespace

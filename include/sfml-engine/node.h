@@ -1,5 +1,7 @@
 #pragma once
 
+#include "sfml-engine/physics/physicsbody.h"
+
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <string>
@@ -35,14 +37,18 @@ namespace gbh
 		void setName(const std::string& name);
 		const std::string& getName() const;
         
+        void setPosition(const sf::Vector2f position);
+        void setPosition(float x, float y);
+        void setRotation(float angle);
+        
         void setOrigin(float x, float y);
         void setOrigin(const sf::Vector2f& origin);
         const sf::Vector2f& getOrigin() const;
         	
 		Scene* getScene();
 
-		//void setPhysicsBody(const std::shared_ptr<PhysicsBody>& body);
-		//const std::shared_ptr<PhysicsBody>& getPhysicsBody();
+		void setPhysicsBody(const std::shared_ptr<PhysicsBody>& body);
+		const std::shared_ptr<PhysicsBody>& getPhysicsBody();
 
 		virtual sf::FloatRect getLocalBounds() const;
 		sf::FloatRect getGlobalBounds() const;
@@ -51,9 +57,14 @@ namespace gbh
 		// Returns the deepest descendant that intersects a point (does not check against this node).
 		std::shared_ptr<Node> getNodeAtPoint(const sf::Vector2f& point);
 		std::shared_ptr<Node> getNodeAtPoint(float x, float y);
+        
+        void runAction(bool recursive, std::function<void (Node&)> action);
 
 	
 	protected:
+        void updatePhysicsTransform();
+        void updateTransformFromPhysics();
+        
 		void setScene(Scene* scene);
 
 		void update(double deltaTime);
@@ -71,7 +82,9 @@ namespace gbh
 		Node* m_parent = nullptr;
         sf::Vector2f m_relativeOrigin;
 		std::vector<std::shared_ptr<Node>> m_children;
+        std::shared_ptr<PhysicsBody> m_physicsBody;
         bool m_removeInNextUpdate = false;
+        bool m_physicsTransformDirty = false;
 	};
 
 } // namespace
