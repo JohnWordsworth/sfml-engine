@@ -20,7 +20,7 @@ void gbh::Node::addChild(std::shared_ptr<Node> node)
 
 int gbh::Node::getChildCount() const
 {
-    return m_children.size();
+    return (int)m_children.size();
 }
 
 

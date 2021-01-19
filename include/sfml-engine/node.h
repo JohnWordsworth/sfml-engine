@@ -3,6 +3,7 @@
 #include "sfml-engine/physics/physicsbody.h"
 
 #include <SFML/Graphics.hpp>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
