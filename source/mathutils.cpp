@@ -1,5 +1,6 @@
 #include "sfml-engine/mathutils.h"
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 
@@ -24,11 +25,11 @@ sf::Vector2f gbh::math::normalize(const sf::Vector2f& vector)
 
 float gbh::math::radiansToDegrees(float radians)
 {
-    return radians * (180.0f / M_PI);
+    return radians * (180.0f / (float)M_PI);
 }
 
 
 float gbh::math::degreesToRadians(float degrees)
 {
-    return degrees / (180.0f / M_PI);
+    return degrees / (180.0f / (float)M_PI);
 }

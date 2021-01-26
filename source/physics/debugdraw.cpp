@@ -95,11 +95,7 @@ void gbh::SfmlBoxDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, cons
         sf::Vertex(boxVectorToSfml(p2), boxColorToSfml(color))
     };
 
-    // Deprecated on OpenGL 3+, but just convenient to show boundaries at the edge of the screen, so we don't mind.
-    glLineWidth(2.0f);
     m_window->draw(line, 2, sf::Lines);
-    glLineWidth(1.0f);
-
 }
 
 
