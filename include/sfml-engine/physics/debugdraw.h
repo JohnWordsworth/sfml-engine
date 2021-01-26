@@ -13,6 +13,8 @@ namespace gbh
     public:
         SfmlBoxDebugDraw(sf::RenderWindow* window, gbh::Scene* scene);
         
+        void PreDraw();
+
         virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
         virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
         virtual void DrawCircle(const b2Vec2& center, float radius, const b2Color& color);
@@ -28,6 +30,7 @@ namespace gbh
     private:
         sf::RenderWindow* m_window;
         gbh::Scene* m_scene;
+        sf::Transform m_cameraTransform;
         float m_pixelsPerMeter;
     };
 }

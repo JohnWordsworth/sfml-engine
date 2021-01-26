@@ -98,14 +98,10 @@ void gbh::Scene::draw(sf::RenderTarget& target) const
 
 	m_rootNode.draw(target, rootTransform);
     
-    if (m_physicsWorld)
+    if (m_physicsWorld && m_drawPhysicsDebug)
     {
-        static bool g_debugPhysics = true;
-        
-        if (g_debugPhysics)
-        {
-            m_physicsWorld->getBoxWorld()->DebugDraw();
-        }
+        m_physicsDebug->PreDraw();
+        m_physicsWorld->getBoxWorld()->DebugDraw();
     }
 }
 
@@ -165,7 +161,7 @@ void gbh::Scene::createPhysicsWorld(const sf::Vector2f& gravity)
 {
     m_physicsWorld = std::make_unique<PhysicsWorld>(gravity);
     m_physicsDebug = std::make_unique<SfmlBoxDebugDraw>(Game::getInstance().getRenderWindow(), this);
-    m_physicsDebug->SetFlags(b2Draw::e_shapeBit);
+    m_physicsDebug->SetFlags(b2Draw::e_shapeBit | b2Draw::e_centerOfMassBit);
     m_physicsWorld->getBoxWorld()->SetDebugDraw(m_physicsDebug.get());
 }
 

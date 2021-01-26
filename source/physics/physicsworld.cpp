@@ -68,8 +68,23 @@ void gbh::PhysicsWorld::destroy()
 {
     for(int i = 0; i < m_bodies.size(); ++i)
     {
-        m_bodies[i]->destroy();
+        if (!m_bodies[i].expired())
+        {
+            std::shared_ptr<gbh::PhysicsBody> body = m_bodies[i].lock();
+            body->destroy();
+        }
     }
     
     m_bodies.clear();
+}
+
+
+b2Vec2 gbh::PhysicsWorld::sfmlVectorToBoxWorld(const sf::Vector2f& sfVector) const
+{
+    return b2Vec2(sfVector.x / m_pixelsPerMeter, -sfVector.y / m_pixelsPerMeter);
+}
+
+sf::Vector2f gbh::PhysicsWorld::boxVectorToSfmlWorld(const b2Vec2& boxVector) const
+{
+    return sf::Vector2f(boxVector.x * m_pixelsPerMeter, -boxVector.y * m_pixelsPerMeter);
 }

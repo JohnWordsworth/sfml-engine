@@ -6,10 +6,10 @@
 gbh::SpriteNode::SpriteNode(const std::string& filename)
 {
 	sf::Texture* texture = TextureCache::getInstance().getTextureAtPath(filename);
-
+    
 	if (texture != nullptr) 
 	{
-		m_sprite.setTexture(*texture);
+        setSprite(sf::Sprite(*texture));
 	}
 }
 
@@ -18,6 +18,13 @@ gbh::SpriteNode::SpriteNode(const sf::Sprite& sprite) :
 	m_sprite(sprite)
 {
 	
+}
+
+
+void gbh::SpriteNode::setSprite(const sf::Sprite &sprite)
+{
+    m_sprite = sprite;
+    updateAbsoluteOrigin();
 }
 
 

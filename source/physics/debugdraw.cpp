@@ -1,11 +1,20 @@
 #include "sfml-engine/physics/debugdraw.h"
 #include "sfml-engine/scene.h"
 
+#define GL_SILENCE_DEPRECATION 1
+#include <SFML/OpenGL.hpp>
+
 
 gbh::SfmlBoxDebugDraw::SfmlBoxDebugDraw(sf::RenderWindow* window, gbh::Scene* scene) :
     m_window(window), m_scene(scene)
 {
     m_pixelsPerMeter = m_scene->getPhysicsWorld()->getPixelsPerMeter();
+}
+
+
+void gbh::SfmlBoxDebugDraw::PreDraw()
+{
+    m_cameraTransform = m_scene->getCameraTransform();
 }
 
 
@@ -86,7 +95,11 @@ void gbh::SfmlBoxDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, cons
         sf::Vertex(boxVectorToSfml(p2), boxColorToSfml(color))
     };
 
+    // Deprecated on OpenGL 3+, but just convenient to show boundaries at the edge of the screen, so we don't mind.
+    glLineWidth(2.0f);
     m_window->draw(line, 2, sf::Lines);
+    glLineWidth(1.0f);
+
 }
 
 

@@ -1,5 +1,6 @@
 #include "sfml-engine/node.h"
 
+#include "sfml-engine/mathutils.h"
 #include "sfml-engine/physics/physicsworld.h"
 
 
@@ -15,12 +16,13 @@ void gbh::Node::addChild(std::shared_ptr<Node> node)
 	m_children.push_back(node);
 	node->m_parent = this;
 	node->setScene(m_scene);
+    node->updateAbsoluteOrigin();
 }
 
 
 int gbh::Node::getChildCount() const
 {
-    return (int)m_children.size();
+    return m_children.size();
 }
 
 
@@ -137,7 +139,7 @@ const std::string& gbh::Node::getName() const
 }
 
 
-void gbh::Node::setPosition(const sf::Vector2f position)
+void gbh::Node::setPosition(const sf::Vector2f& position)
 {
     Transformable::setPosition(position);
     m_physicsTransformDirty = true;
@@ -155,6 +157,55 @@ void gbh::Node::setRotation(float angle)
 {
     Transformable::setRotation(angle);
     m_physicsTransformDirty = true;
+}
+
+
+void gbh::Node::move(const sf::Vector2f& offset)
+{
+    Transformable::move(offset);
+    m_physicsTransformDirty = true;
+}
+
+
+void gbh::Node::move(float x, float y)
+{
+    Transformable::move(x, y);
+    m_physicsTransformDirty = true;
+}
+
+
+void gbh::Node::rotate(float angle)
+{
+    Transformable::rotate(angle);
+    m_physicsTransformDirty = true;
+}
+
+
+void gbh::Node::setScale(const sf::Vector2f& factors)
+{
+    Transformable::setScale(factors);
+    updateAbsoluteOrigin();
+}
+
+
+void gbh::Node::setScale(float x, float y)
+{
+    Transformable::setScale(x, y);
+    updateAbsoluteOrigin();
+}
+
+
+void gbh::Node::scale(const sf::Vector2f& factors)
+{
+    Transformable::scale(factors);
+    updateAbsoluteOrigin();
+}
+
+
+void gbh::Node::scale(float x, float y)
+{
+    Transformable::scale(x, y);
+    updateAbsoluteOrigin();
 }
 
 
@@ -272,6 +323,54 @@ std::shared_ptr<gbh::Node> gbh::Node::getNodeAtPoint(const sf::Vector2f& point)
 std::shared_ptr<gbh::Node> gbh::Node::getNodeAtPoint(float x, float y)
 {
 	return getNodeAtPoint(sf::Vector2f(x, y));
+}
+
+
+sf::Vector2f gbh::Node::forwardVector() const
+{
+    float angle = gbh::math::degreesToRadians(getRotation());
+    sf::Vector2f result;
+    
+    result.x = -sin(angle);
+    result.y = cos(angle);
+
+    return result;
+}
+
+
+sf::Vector2f gbh::Node::backwardVector() const
+{
+    float angle = gbh::math::degreesToRadians(getRotation() + 180.0f);
+    sf::Vector2f result;
+    
+    result.x = -sin(angle);
+    result.y = cos(angle);
+
+    return result;
+}
+
+
+sf::Vector2f gbh::Node::leftVector() const
+{
+    float angle = gbh::math::degreesToRadians(getRotation() - 90.0f);
+    sf::Vector2f result;
+    
+    result.x = -sin(angle);
+    result.y = cos(angle);
+
+    return result;
+}
+
+
+sf::Vector2f gbh::Node::rightVector() const
+{
+    float angle = gbh::math::degreesToRadians(getRotation() + 90.0f);
+    sf::Vector2f result;
+    
+    result.x = -sin(angle);
+    result.y = cos(angle);
+
+    return result;
 }
 
 

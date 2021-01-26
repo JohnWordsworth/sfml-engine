@@ -54,6 +54,9 @@ namespace gbh {
         void createPhysicsWorld(const sf::Vector2f& gravity);
         PhysicsWorld* getPhysicsWorld() const { return m_physicsWorld.get(); }
         void simulatePhysics(double deltaTime);
+        
+        void setDrawPhysicsDebug(bool value) { m_drawPhysicsDebug = value; }
+        bool getDrawPhysicsDebug() const { return m_drawPhysicsDebug; }
 		
 	protected:
 		virtual void onUpdate(double deltaTime);
@@ -74,6 +77,7 @@ namespace gbh {
         std::unique_ptr<PhysicsWorld> m_physicsWorld;
         std::unique_ptr<SfmlBoxDebugDraw> m_physicsDebug;
         bool m_initialized = false;
+        bool m_drawPhysicsDebug = false;
 	};
 
 } // namespace

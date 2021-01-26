@@ -27,10 +27,13 @@ namespace gbh
         b2World* getBoxWorld() const { return m_boxWorld.get(); }
         float getPixelsPerMeter() const { return m_pixelsPerMeter; }
         
+        b2Vec2 sfmlVectorToBoxWorld(const sf::Vector2f& sfVector) const;
+        sf::Vector2f boxVectorToSfmlWorld(const b2Vec2& boxVector) const;
+        
     private:
         std::unique_ptr<b2World> m_boxWorld;
-        std::vector<std::shared_ptr<PhysicsBody>> m_bodies;
-        float m_pixelsPerMeter = 10.0f;         // Not many pixels per meter as we are dealing with space/vehicles etc
+        std::vector<std::weak_ptr<PhysicsBody>> m_bodies;
+        float m_pixelsPerMeter = 30.0f;
         
         float m_simulatedTime = 0.0f;
         float m_actualTime = 0.0f;

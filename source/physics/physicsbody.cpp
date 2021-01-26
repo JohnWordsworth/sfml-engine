@@ -1,5 +1,6 @@
 #include "sfml-engine/physics/physicsbody.h"
 #include "sfml-engine/physics/physicsworld.h"
+#include "sfml-engine/mathutils.h"
 
 #include <iostream>
 
@@ -147,7 +148,7 @@ sf::Vector2f gbh::PhysicsBody::getPosition()
 
 float gbh::PhysicsBody::getAngle()
 {
-    return m_boxBody->GetAngle();
+    return boxAngleToSfml(m_boxBody->GetAngle());
 }
 
 
@@ -156,7 +157,8 @@ void gbh::PhysicsBody::setTransform(const sf::Vector2f& position, float angle)
     if (m_boxBody)
     {
         float ppm = m_world->getPixelsPerMeter();
-        m_boxBody->SetTransform(b2Vec2(position.x / ppm, position.y / ppm), angle);
+        float boxAngle = sfmlAngleToBox(angle);
+        m_boxBody->SetTransform(b2Vec2(position.x / ppm, position.y / ppm), boxAngle);
     }
 }
 
@@ -180,6 +182,67 @@ void gbh::PhysicsBody::setType(gbh::PhysicsBodyType type)
 }
 
 
+sf::Vector2f gbh::PhysicsBody::getLinearVelocity() const
+{
+    return m_world->boxVectorToSfmlWorld(m_boxBody->GetLinearVelocity());
+}
+
+
+void gbh::PhysicsBody::setLinearVelocity(const sf::Vector2f& value)
+{
+    m_boxBody->SetLinearVelocity(m_world->sfmlVectorToBoxWorld(value));
+}
+
+
+float gbh::PhysicsBody::getAngularVelocity() const
+{
+    return boxAngleToSfml(m_boxBody->GetAngularVelocity());
+}
+
+
+void gbh::PhysicsBody::setAngularVelocity(float value)
+{
+    m_boxBody->SetAngularVelocity(sfmlAngleToBox(value));
+}
+
+
+void gbh::PhysicsBody::applyForceToCenter(const sf::Vector2f& force, bool wake)
+{
+    m_boxBody->ApplyForceToCenter(m_world->sfmlVectorToBoxWorld(force), wake);
+}
+
+
+void gbh::PhysicsBody::applyForce(const sf::Vector2f& force, const sf::Vector2f& point, bool wake)
+{
+    m_boxBody->ApplyForce(m_world->sfmlVectorToBoxWorld(force), m_world->sfmlVectorToBoxWorld(point), wake);
+}
+
+
+void gbh::PhysicsBody::applyTorque(float torque, bool wake)
+{
+    m_boxBody->ApplyTorque(sfmlAngleToBox(torque), wake);
+}
+
+
+void gbh::PhysicsBody::applyImpulseToCenter(const sf::Vector2f& impulse, bool wake)
+{
+    m_boxBody->ApplyLinearImpulseToCenter(m_world->sfmlVectorToBoxWorld(impulse), wake);
+}
+
+
+void gbh::PhysicsBody::applyImpulse(const sf::Vector2f& impulse, const sf::Vector2f& point, bool wake)
+{
+    m_boxBody->ApplyLinearImpulse(m_world->sfmlVectorToBoxWorld(impulse), m_world->sfmlVectorToBoxWorld(point), wake);
+}
+
+
+void gbh::PhysicsBody::applyAngularImpulse(float impulse, bool wake)
+{
+    m_boxBody->ApplyAngularImpulse(sfmlAngleToBox(impulse), wake);
+}
+
+
+
 void gbh::PhysicsBody::destroy()
 {
     if (m_boxBody != nullptr)
@@ -188,3 +251,16 @@ void gbh::PhysicsBody::destroy()
         m_boxBody = nullptr;
     }
 }
+
+
+float gbh::PhysicsBody::boxAngleToSfml(float angle)
+{
+    return -gbh::math::radiansToDegrees(angle);
+}
+
+
+float gbh::PhysicsBody::sfmlAngleToBox(float angle)
+{
+    return -gbh::math::degreesToRadians(angle);
+}
+

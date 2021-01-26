@@ -12,10 +12,13 @@ namespace gbh {
 	public:
 		SpriteNode(const std::string& filename);
 		SpriteNode(const sf::Sprite& sprite);
+        virtual ~SpriteNode() { };
 
+        void setSprite(const sf::Sprite& sprite);
+        
 		virtual sf::FloatRect getLocalBounds() const;
-	
-	protected:
+
+    protected:
 		virtual void onDraw(sf::RenderTarget& target, const sf::Transform& transform) const;
 	
 	private:
