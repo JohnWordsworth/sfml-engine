@@ -24,6 +24,7 @@ namespace gbh
         const std::shared_ptr<gbh::Scene>& getCurrentScene() const;
 
         sf::RenderWindow* getRenderWindow() { return m_window.get(); }
+        sf::RenderTarget* getRenderTarget() { return m_window.get(); } 
 		sf::Vector2i getWindowSize();
         
         // This is a hack as the keyboard doesn't seem to work on macOS Big Sur under some circumstances

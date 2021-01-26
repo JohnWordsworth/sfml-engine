@@ -52,19 +52,19 @@ void gbh::Scene::destroy()
 
 void gbh::Scene::setCamera(std::shared_ptr<CameraNode> cameraNode)
 {
-	m_camera = cameraNode;
+    m_sceneCamera = cameraNode;
 }
 
 
 std::shared_ptr<gbh::CameraNode> gbh::Scene::getCamera()
 {
-	return m_camera;
+	return m_sceneCamera;
 }
 
 
 sf::Transform gbh::Scene::getCameraTransform() const
 {
-	if (m_camera == nullptr)
+	if (m_sceneCamera == nullptr)
 	{
 		return sf::Transform::Identity;
 	}
@@ -72,7 +72,7 @@ sf::Transform gbh::Scene::getCameraTransform() const
 	sf::Vector2i windowSize = Game::getInstance().getWindowSize();
 	sf::Transform screen = sf::Transform().translate(-windowSize.x * 0.5f, -windowSize.y * 0.5f);
 	sf::Transform invScreen = sf::Transform().translate(windowSize.x * 0.5f, windowSize.y * 0.5f);
-	sf::Transform camera = m_camera->getTransform();
+	sf::Transform camera = m_sceneCamera->getTransform();
 
 	sf::Transform transform = invScreen * camera * screen;
 	return transform;
@@ -91,12 +91,16 @@ void gbh::Scene::draw(sf::RenderTarget& target) const
 {
     sf::Transform rootTransform;
     
-	if (m_camera != nullptr)
+	if (m_sceneCamera != nullptr)
 	{
         rootTransform = getCameraTransform().getInverse();
 	}
 
+    // Drawn using the camera
 	m_rootNode.draw(target, rootTransform);
+    
+    // Always drawn in screen space
+    m_overlayNode.draw(target, sf::Transform());
     
     if (m_physicsWorld && m_drawPhysicsDebug)
     {

@@ -40,6 +40,8 @@ namespace gbh {
 
 		void update(double deltaTime);
 		void draw(sf::RenderTarget& target) const;
+        
+        Node& getOverlay() { return m_overlayNode; }
 
         void addChild(const std::shared_ptr<gbh::Node>& node);
         int getChildCount() const;
@@ -73,7 +75,9 @@ namespace gbh {
 
 	private:
 		Node m_rootNode;
-		std::shared_ptr<CameraNode> m_camera;
+        Node m_overlayNode;
+        
+        std::shared_ptr<CameraNode> m_sceneCamera;
         std::unique_ptr<PhysicsWorld> m_physicsWorld;
         std::unique_ptr<SfmlBoxDebugDraw> m_physicsDebug;
         bool m_initialized = false;

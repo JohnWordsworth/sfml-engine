@@ -14,7 +14,7 @@ gbh::SfmlBoxDebugDraw::SfmlBoxDebugDraw(sf::RenderWindow* window, gbh::Scene* sc
 
 void gbh::SfmlBoxDebugDraw::PreDraw()
 {
-    m_cameraTransform = m_scene->getCameraTransform();
+    m_cameraTransform = m_scene->getCameraTransform().getInverse();
 }
 
 
@@ -33,7 +33,7 @@ void gbh::SfmlBoxDebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCoun
     polygon.setOutlineColor(boxColorToSfml(color));
     polygon.setFillColor(sf::Color::Transparent);
 
-    m_window->draw(polygon);
+    m_window->draw(polygon, m_cameraTransform);
 }
 
 
@@ -49,10 +49,10 @@ void gbh::SfmlBoxDebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 verte
     }
     
     polygon.setOutlineThickness(1.0f);
-    polygon.setOutlineColor(boxColorToSfml(color, 64));
-    polygon.setFillColor(sf::Color::Transparent);
+    polygon.setOutlineColor(boxColorToSfml(color));
+    polygon.setFillColor(boxColorToSfml(color, 64));
 
-    m_window->draw(polygon);
+    m_window->draw(polygon, m_cameraTransform);
 }
 
 
@@ -66,7 +66,7 @@ void gbh::SfmlBoxDebugDraw::DrawCircle(const b2Vec2& center, float radius, const
     circle.setOutlineThickness(1.0f);
     circle.setOutlineColor(boxColorToSfml(color));
 
-    m_window->draw(circle);
+    m_window->draw(circle, m_cameraTransform);
 }
 
 
@@ -80,7 +80,7 @@ void gbh::SfmlBoxDebugDraw::DrawSolidCircle(const b2Vec2& center, float radius, 
     circle.setOutlineThickness(1.0f);
     circle.setOutlineColor(boxColorToSfml(color));
 
-    m_window->draw(circle);
+    m_window->draw(circle, m_cameraTransform);
 
     b2Vec2 endPoint = center + radius * axis;
     DrawSegment(center, endPoint, color);
@@ -95,7 +95,7 @@ void gbh::SfmlBoxDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, cons
         sf::Vertex(boxVectorToSfml(p2), boxColorToSfml(color))
     };
 
-    m_window->draw(line, 2, sf::Lines);
+    m_window->draw(line, 2, sf::Lines, m_cameraTransform);
 }
 
 
