@@ -32,6 +32,7 @@ void gbh::Game::run(const std::string& firstScene)
 			{
 				if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)
 				{
+                    updateKeyboardState(event);
 					m_currentScene->onKeyboardEvent(event);
 				}
 
@@ -113,4 +114,28 @@ const std::shared_ptr<gbh::Scene>& gbh::Game::getCurrentScene() const
 sf::Vector2i gbh::Game::getWindowSize() 
 {
 	return m_windowSize;
+}
+
+
+bool gbh::Game::isKeyPressed(sf::Keyboard::Key key)
+{
+    if (m_keysPressed.find(key) == m_keysPressed.end())
+    {
+        return false;
+    }
+    
+    return m_keysPressed[key];
+}
+
+
+void gbh::Game::updateKeyboardState(sf::Event &event)
+{
+    if (event.type == sf::Event::KeyPressed)
+    {
+        m_keysPressed[event.key.code] = true;
+    }
+    else
+    {
+        m_keysPressed[event.key.code] = false;
+    }
 }
