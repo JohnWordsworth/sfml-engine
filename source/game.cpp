@@ -78,7 +78,7 @@ void gbh::Game::run(const std::string& firstScene)
         // Limit delta time to 0.25s - incase the application stalls for a while
         deltaTime = (deltaTime > 0.25f) ? 0.25f : deltaTime;
 
-        m_currentScene->update(elapsedTime.asSeconds());
+        m_currentScene->update(deltaTime);
 		m_currentScene->draw(*m_window);
 
 		m_window->display();
