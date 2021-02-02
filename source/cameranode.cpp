@@ -14,8 +14,8 @@ sf::FloatRect gbh::CameraNode::getLocalBounds() const
     
     if (m_renderTarget != nullptr)
     {
-        bounds.width = m_renderTarget->getSize().x;
-        bounds.height = m_renderTarget->getSize().y;
+        bounds.width = (float)m_renderTarget->getSize().x;
+        bounds.height = (float)m_renderTarget->getSize().y;
     }
     
     return bounds;

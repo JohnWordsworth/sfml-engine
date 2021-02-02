@@ -22,7 +22,7 @@ void gbh::Node::addChild(std::shared_ptr<Node> node)
 
 int gbh::Node::getChildCount() const
 {
-    return m_children.size();
+    return (int)m_children.size();
 }
 
 
@@ -97,7 +97,7 @@ void gbh::Node::removeChildrenWithName(const std::string& name, bool immediate)
     }
     
     // Remove from back, so that all of the indices are still valid
-    for(int i = (int)itemsToRemove.size() - 1; i >= 0; ++i)
+    for(int i = (int)itemsToRemove.size() - 1; i >= 0; --i)
     {
         m_children.erase(m_children.begin() + i);
     }
