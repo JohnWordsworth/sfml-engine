@@ -4,7 +4,7 @@
 
 namespace gbh
 {
-	class CameraNode : public Node
+    class CameraNode : public Node
 	{
 	public:
 		CameraNode();

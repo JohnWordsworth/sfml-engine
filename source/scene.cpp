@@ -50,35 +50,6 @@ void gbh::Scene::destroy()
 }
 
 
-void gbh::Scene::setCamera(std::shared_ptr<CameraNode> cameraNode)
-{
-    m_sceneCamera = cameraNode;
-}
-
-
-std::shared_ptr<gbh::CameraNode> gbh::Scene::getCamera()
-{
-	return m_sceneCamera;
-}
-
-
-sf::Transform gbh::Scene::getCameraTransform() const
-{
-	if (m_sceneCamera == nullptr)
-	{
-		return sf::Transform::Identity;
-	}
-
-	sf::Vector2i windowSize = Game::getInstance().getWindowSize();
-	sf::Transform screen = sf::Transform().translate(-windowSize.x * 0.5f, -windowSize.y * 0.5f);
-	sf::Transform invScreen = sf::Transform().translate(windowSize.x * 0.5f, windowSize.y * 0.5f);
-	sf::Transform camera = m_sceneCamera->getTransform();
-
-	sf::Transform transform = invScreen * camera * screen;
-	return transform;
-}
-
-
 void gbh::Scene::update(double deltaTime)
 {
     onUpdate(deltaTime);
@@ -107,6 +78,35 @@ void gbh::Scene::draw(sf::RenderTarget& target) const
         m_physicsDebug->PreDraw();
         m_physicsWorld->getBoxWorld()->DebugDraw();
     }
+}
+
+
+void gbh::Scene::setCamera(std::shared_ptr<CameraNode> cameraNode)
+{
+    m_sceneCamera = cameraNode;
+}
+
+
+std::shared_ptr<gbh::CameraNode> gbh::Scene::getCamera()
+{
+    return m_sceneCamera;
+}
+
+
+sf::Transform gbh::Scene::getCameraTransform() const
+{
+    if (m_sceneCamera == nullptr)
+    {
+        return sf::Transform::Identity;
+    }
+
+    sf::Vector2i windowSize = Game::getInstance().getWindowSize();
+    sf::Transform screen = sf::Transform().translate(-windowSize.x * 0.5f, -windowSize.y * 0.5f);
+    sf::Transform invScreen = sf::Transform().translate(windowSize.x * 0.5f, windowSize.y * 0.5f);
+    sf::Transform camera = m_sceneCamera->getTransform();
+
+    sf::Transform transform = invScreen * camera * screen;
+    return transform;
 }
 
 
