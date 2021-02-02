@@ -182,6 +182,19 @@ void gbh::PhysicsBody::setType(gbh::PhysicsBodyType type)
 }
 
 
+void gbh::PhysicsBody::makeSensor()
+{
+    if (m_boxBody == nullptr) {
+        return;
+    }
+    
+    for (b2Fixture* f = m_boxBody->GetFixtureList(); f; f = f->GetNext())
+    {
+        f->SetSensor(true);
+    }
+}
+
+
 sf::Vector2f gbh::PhysicsBody::getLinearVelocity() const
 {
     return m_world->boxVectorToSfmlWorld(m_boxBody->GetLinearVelocity());

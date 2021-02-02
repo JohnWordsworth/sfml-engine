@@ -25,8 +25,8 @@ namespace gbh
         PhysicsMaterial(float density, float restitution, float friction);
         
         float density = 1.0f;
-        float restitution = 0.9f;
-        float friction = 0.0f;
+        float restitution = 0.7f;
+        float friction = 0.05f;
     };
 
     class PhysicsBody
@@ -46,8 +46,13 @@ namespace gbh
         
         PhysicsWorld* getWorld() { return m_world; }
         
+        void setNode(gbh::Node* node) { m_node = node; }
+        gbh::Node* getNode() const { return m_node; }
+        
         void setTransform(const sf::Vector2f& position, float angle);
         void setType(PhysicsBodyType type);
+        
+        void makeSensor();
         
         // Velocity
         
@@ -99,6 +104,7 @@ namespace gbh
         static float boxAngleToSfml(float angle);
         static float sfmlAngleToBox(float angle);
         
+        gbh::Node* m_node = nullptr;
         PhysicsWorld* m_world = nullptr;
         b2Body* m_boxBody = nullptr;
         std::vector<b2Fixture*> m_fixtures;

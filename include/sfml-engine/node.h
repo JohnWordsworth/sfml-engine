@@ -1,6 +1,8 @@
 #pragma once
 
+
 #include "sfml-engine/physics/physicsbody.h"
+#include "sfml-engine/physics/physicsworld.h"
 
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -59,6 +61,12 @@ namespace gbh
 
 		void setPhysicsBody(const std::shared_ptr<PhysicsBody>& body);
 		const std::shared_ptr<PhysicsBody>& getPhysicsBody();
+        
+        void beginContact(const PhysicsContact& contact);
+        void endContact(const PhysicsContact& contact);
+        
+        void setBeginContactCallback(const std::function<void(const PhysicsContact& contact)>& func);
+        void setEndContactCallback(const std::function<void(const PhysicsContact& contact)>& func);
 
 		virtual sf::FloatRect getLocalBounds() const;
 		sf::FloatRect getGlobalBounds() const;
@@ -76,9 +84,6 @@ namespace gbh
 
         // Run an function on this node (and all of it's children if recursive is set to true).
         void runAction(bool recursive, std::function<void (Node&)> action);
-        
-
-        
 
 	protected:
         void updatePhysicsTransform();
@@ -92,15 +97,20 @@ namespace gbh
 
 		virtual void onUpdate(double deltaTime);
 		virtual void onDraw(sf::RenderTarget& target, const sf::Transform& transform) const;
+        virtual void onBeginContact(const PhysicsContact& contact);
+        virtual void onEndContact(const PhysicsContact& contact);
         
 	private:
-        
 		std::string m_name;
 		Scene* m_scene = nullptr;
 		Node* m_parent = nullptr;
         sf::Vector2f m_relativeOrigin = sf::Vector2f(0.5f, 0.5f);
 		std::vector<std::shared_ptr<Node>> m_children;
+        
         std::shared_ptr<PhysicsBody> m_physicsBody;
+        std::function<void(const PhysicsContact& contact)> m_beginContactCallback = nullptr;
+        std::function<void(const PhysicsContact& contact)> m_endContactCallback = nullptr;
+        
         bool m_removeInNextUpdate = false;
         bool m_physicsTransformDirty = false;
 	};

@@ -237,7 +237,14 @@ gbh::Scene* gbh::Node::getScene()
 
 void gbh::Node::setPhysicsBody(const std::shared_ptr<PhysicsBody>& body)
 {
+    if (m_physicsBody != nullptr)
+    {
+        m_physicsBody->setNode(nullptr);
+    }
+    
     m_physicsBody = body;
+    m_physicsBody->setNode(this);
+    
     m_physicsTransformDirty = true;
 }
 
@@ -245,6 +252,40 @@ void gbh::Node::setPhysicsBody(const std::shared_ptr<PhysicsBody>& body)
 const std::shared_ptr<gbh::PhysicsBody>& gbh::Node::getPhysicsBody()
 {
     return m_physicsBody;
+}
+
+
+void gbh::Node::beginContact(const gbh::PhysicsContact& contact)
+{
+    onBeginContact(contact);
+    
+    if (m_beginContactCallback)
+    {
+        m_beginContactCallback(contact);
+    }
+}
+
+
+void gbh::Node::endContact(const gbh::PhysicsContact& contact)
+{
+    onEndContact(contact);
+    
+    if (m_endContactCallback)
+    {
+        m_endContactCallback(contact);
+    }
+}
+
+
+void gbh::Node::setBeginContactCallback(const std::function<void(const gbh::PhysicsContact& contact)>& func)
+{
+    m_beginContactCallback = func;
+}
+
+
+void gbh::Node::setEndContactCallback(const std::function<void(const gbh::PhysicsContact& contact)>& func)
+{
+    m_endContactCallback = func;
 }
 
 
@@ -467,6 +508,18 @@ void gbh::Node::onUpdate(double deltaTime)
 void gbh::Node::onDraw(sf::RenderTarget& target, const sf::Transform& transform) const
 {
 	// Subclasses of the base node use this to draw their contents
+}
+
+
+void gbh::Node::onBeginContact(const PhysicsContact& contact)
+{
+    // Subclasses of the base node can use this to detect collisions
+}
+
+
+void gbh::Node::onEndContact(const PhysicsContact &contact)
+{
+    // Subclasses of the base node can use this to detect collisions
 }
 
 

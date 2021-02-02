@@ -164,6 +164,8 @@ std::shared_ptr<gbh::Node> gbh::Scene::getNodeAtViewPoint(float x, float y)
 void gbh::Scene::createPhysicsWorld(const sf::Vector2f& gravity)
 {
     m_physicsWorld = std::make_unique<PhysicsWorld>(gravity);
+    m_physicsWorld->setContactListener(this);
+    
     m_physicsDebug = std::make_unique<SfmlBoxDebugDraw>(Game::getInstance().getRenderWindow(), this);
     m_physicsDebug->SetFlags(b2Draw::e_shapeBit | b2Draw::e_centerOfMassBit);
     m_physicsWorld->getBoxWorld()->SetDebugDraw(m_physicsDebug.get());
@@ -191,6 +193,9 @@ void gbh::Scene::simulatePhysics(double deltaTime)
     // Run the physics simulation
     m_physicsWorld->simulate(deltaTime);
     
+    // Update the scene's contact list
+    m_physicsWorld->getContactList(m_physicsContacts);
+    
     // Udpate any objects that have a physics body attached
     m_rootNode.runAction(true, [](Node& node) {
         if (node.m_physicsBody == nullptr) {
@@ -199,6 +204,52 @@ void gbh::Scene::simulatePhysics(double deltaTime)
         
         node.updateTransformFromPhysics();
     });
+}
+
+
+void gbh::Scene::beginContact(const PhysicsContact& contact)
+{
+    if (m_debugPhysicsEvents)
+    {
+        std::string nodeA = (contact.nodeA) ? contact.nodeA->getName() : "(null node)";
+        std::string nodeB = (contact.nodeB) ? contact.nodeB->getName() : "(null node)";
+        std::cout << "BeginContact between node: '" << nodeA << "' and '" << nodeB << "'.\n";
+    }
+    
+    onBeginPhysicsContact(contact);
+    
+    if (contact.nodeA)
+    {
+        contact.nodeA->beginContact(contact);
+    }
+    
+    if (contact.nodeB)
+    {
+        contact.nodeB->beginContact(contact);
+    }
+}
+
+
+void gbh::Scene::endContact(const PhysicsContact& contact)
+{
+    if (m_debugPhysicsEvents)
+    {
+        std::string nodeA = (contact.nodeA) ? contact.nodeA->getName() : "(null node)";
+        std::string nodeB = (contact.nodeB) ? contact.nodeB->getName() : "(null node)";
+        std::cout << "BeginContact between node: '" << nodeA << "' and '" << nodeB << "'.\n";
+    }
+    
+    onEndPhysicsContact(contact);
+    
+    if (contact.nodeA)
+    {
+        contact.nodeA->endContact(contact);
+    }
+    
+    if (contact.nodeB)
+    {
+        contact.nodeB->endContact(contact);
+    }
 }
 
 
@@ -213,3 +264,5 @@ void gbh::Scene::onDestroyScene() { }
 void gbh::Scene::onKeyboardEvent(sf::Event& event) { }
 void gbh::Scene::onMouseEvent(sf::Event& event) { }
 void gbh::Scene::onJoystickEvent(sf::Event& event) { }
+void gbh::Scene::onBeginPhysicsContact(const PhysicsContact& contact) { }
+void gbh::Scene::onEndPhysicsContact(const PhysicsContact& contact) { }

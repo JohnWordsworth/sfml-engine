@@ -18,7 +18,7 @@ namespace gbh {
 
 	class CameraNode;
 
-	class Scene
+	class Scene : public PhysicsContactListener
 	{
 		friend class gbh::Game;
 
@@ -59,6 +59,14 @@ namespace gbh {
         
         void setDrawPhysicsDebug(bool value) { m_drawPhysicsDebug = value; }
         bool getDrawPhysicsDebug() const { return m_drawPhysicsDebug; }
+        
+        void setDebugPhysicsEvents(bool value) { m_debugPhysicsEvents = value; }
+        bool getDebugPhysicsEvents() const { return m_debugPhysicsEvents; }
+        
+        void beginContact(const PhysicsContact& contact) override;
+        void endContact(const PhysicsContact& contact) override;
+        
+        const std::vector<PhysicsContact>& getContactList() const { return m_physicsContacts; };
 		
 	protected:
 		virtual void onUpdate(double deltaTime);
@@ -72,6 +80,8 @@ namespace gbh {
 		virtual void onKeyboardEvent(sf::Event& event);
 		virtual void onMouseEvent(sf::Event& event);
 		virtual void onJoystickEvent(sf::Event& event);
+        virtual void onBeginPhysicsContact(const PhysicsContact& contact);
+        virtual void onEndPhysicsContact(const PhysicsContact& contact);
 
 	private:
 		Node m_rootNode;
@@ -80,8 +90,12 @@ namespace gbh {
         std::shared_ptr<CameraNode> m_sceneCamera;
         std::unique_ptr<PhysicsWorld> m_physicsWorld;
         std::unique_ptr<SfmlBoxDebugDraw> m_physicsDebug;
+        
+        std::vector<PhysicsContact> m_physicsContacts;
+    
         bool m_initialized = false;
         bool m_drawPhysicsDebug = false;
+        bool m_debugPhysicsEvents = false;
 	};
 
 } // namespace
