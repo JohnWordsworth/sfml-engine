@@ -84,7 +84,7 @@ void gbh::PhysicsWorld::simulate(double deltaTime)
     {
         for(int i = 0; i < m_contactEvents.size(); ++i)
         {
-            ContactEvent& event = m_contactEvents[i];
+            ContactEvent event = m_contactEvents[i];
             
             if (event.eventType == ContactEventType::BeginContact)
             {
