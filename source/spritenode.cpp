@@ -28,6 +28,18 @@ void gbh::SpriteNode::setSprite(const sf::Sprite &sprite)
 }
 
 
+void gbh::SpriteNode::setColor(const sf::Color& color)
+{
+    m_sprite.setColor(color);
+}
+
+
+const sf::Color& gbh::SpriteNode::getColor() const
+{
+    return m_sprite.getColor();
+}
+
+
 sf::FloatRect gbh::SpriteNode::getLocalBounds() const
 {
 	return m_sprite.getLocalBounds();

@@ -15,6 +15,9 @@ namespace gbh {
         virtual ~SpriteNode() { };
 
         void setSprite(const sf::Sprite& sprite);
+
+        void setColor(const sf::Color& color);
+        const sf::Color& getColor() const;
         
 		virtual sf::FloatRect getLocalBounds() const;
 
