@@ -7,10 +7,12 @@ set(LIBRARY "sfml-engine")
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "source/*.cpp")
 file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS "include/*.h")
 
-add_library(${LIBRARY} STATIC ${SOURCE_FILES} ${HEADER_FILES})
-target_include_directories(${LIBRARY} PUBLIC include)
-target_include_directories(${LIBRARY} PRIVATE source)
+file(GLOB_RECURSE NLOHMANN_JSON_FILES CONFIGURE_DEPENDS "libs/nlohmann/*.hpp")
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/libs/" PREFIX "Libraries" FILES ${NLOHMANN_JSON_FILES})
 
+add_library(${LIBRARY} STATIC ${SOURCE_FILES} ${HEADER_FILES} ${NLOHMANN_JSON_FILES})
+target_include_directories(${LIBRARY} PUBLIC "include" "libs/")
+target_include_directories(${LIBRARY} PRIVATE source)
 
 ## SFML
 
