@@ -50,6 +50,9 @@ namespace gbh
         /** Remove all children of this node with the given name. This is not recursive and does not search child nodes. */
         void removeChildrenWithName(const std::string& name, bool immediate);
         
+        /** Remove all children of this node. */
+        void removeAllChildren(bool immediate);
+        
         /** Removes this node from the parent node. Useful if you have a reference to this node and want to remove it from the scene. */
         void removeFromParent(bool immediate);
         

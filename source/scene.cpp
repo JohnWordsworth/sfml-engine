@@ -146,6 +146,11 @@ void gbh::Scene::removeChildrenWithName(const std::string& name, bool immediate)
 }
 
 
+void gbh::Scene::removeAllChildren(bool immediate)
+{
+    return m_rootNode.removeAllChildren(immediate);
+}
+
 
 std::shared_ptr<gbh::Node> gbh::Scene::getNodeAtViewPoint(const sf::Vector2f& point)
 {

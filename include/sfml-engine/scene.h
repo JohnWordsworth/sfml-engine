@@ -75,7 +75,10 @@ namespace gbh {
         
         /** Remove all children of this node with the given name. This is not recursive and does not search child nodes. */
         void removeChildrenWithName(const std::string& name, bool immediate);
-
+        
+        /** Remove all children of this scene. */
+        void removeAllChildren(bool immediate);
+        
         /** Returns the deepest descendant that intersects a point in screen space (as defined by the current camera). */
 		std::shared_ptr<Node> getNodeAtViewPoint(const sf::Vector2f& point);
 		std::shared_ptr<Node> getNodeAtViewPoint(float x, float y);

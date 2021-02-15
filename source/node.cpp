@@ -104,6 +104,22 @@ void gbh::Node::removeChildrenWithName(const std::string& name, bool immediate)
 }
 
 
+void gbh::Node::removeAllChildren(bool immediate)
+{
+    if (immediate)
+    {
+        m_children.clear();
+    }
+    else
+    {
+        for(int i = 0; i < m_children.size(); ++i)
+        {
+            m_children[i]->m_removeInNextUpdate = true;
+        }
+    }
+}
+
+
 void gbh::Node::removeFromParent(bool immediate)
 {
     if (immediate)
@@ -526,6 +542,6 @@ void gbh::Node::onEndContact(const PhysicsContact &contact)
 void gbh::Node::updateAbsoluteOrigin()
 {
     sf::FloatRect bounds = getLocalBounds();
-    sf::Vector2f absoluteOrigin = sf::Vector2f(m_relativeOrigin.x * bounds.width, m_relativeOrigin.y * bounds.height);
+    sf::Vector2f absoluteOrigin = sf::Vector2f(bounds.left + (m_relativeOrigin.x * bounds.width), bounds.top + (m_relativeOrigin.y * bounds.height));
     sf::Transformable::setOrigin(absoluteOrigin);
 }
