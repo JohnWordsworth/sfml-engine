@@ -40,6 +40,7 @@ namespace gbh
         void addCircle(float radius, const sf::Vector2f position = sf::Vector2f(), const PhysicsMaterial& material = PhysicsMaterial());
         void addBox(const sf::Vector2f& size, const sf::Vector2f position = sf::Vector2f(), const PhysicsMaterial& material = PhysicsMaterial());
         void addEdgeBox(const sf::Vector2f& size, const sf::Vector2f position = sf::Vector2f(), const PhysicsMaterial& material = PhysicsMaterial());
+        void addEdgeList(const std::vector<sf::Vector2f> vertices, const PhysicsMaterial& material = PhysicsMaterial());
         
         sf::Vector2f getPosition();
         float getAngle();

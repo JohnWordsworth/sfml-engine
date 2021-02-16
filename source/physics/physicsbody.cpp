@@ -138,6 +138,38 @@ void gbh::PhysicsBody::addEdgeBox(const sf::Vector2f& size, const sf::Vector2f p
 }
 
 
+void gbh::PhysicsBody::addEdgeList(const std::vector<sf::Vector2f> vertices, const PhysicsMaterial& material)
+{
+    if (m_boxBody == nullptr)
+    {
+        std::cout << "Attempted to add a box fixture to a null body. Aborting.\n";
+        return;
+    }
+    
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = material.density;
+    fixtureDef.restitution = material.restitution;
+    fixtureDef.friction = material.friction;
+    
+    for(int i = 0; i < vertices.size() - 2; ++i)
+    {
+        sf::Vector2f a = vertices[i];
+        sf::Vector2f b = vertices[i+1];
+        
+        b2EdgeShape shape;
+        shape.SetTwoSided(m_world->sfmlVectorToBoxWorld(a), m_world->sfmlVectorToBoxWorld(b));
+
+        fixtureDef.shape = &shape;
+        b2Fixture* fixture = m_boxBody->CreateFixture(&fixtureDef);
+        
+        if (fixture != nullptr)
+        {
+            m_fixtures.push_back(fixture);
+        }
+    }
+}
+
+
 sf::Vector2f gbh::PhysicsBody::getPosition()
 {
     b2Vec2 position = m_boxBody->GetPosition();

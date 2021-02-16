@@ -69,6 +69,15 @@ std::shared_ptr<gbh::PhysicsBody> gbh::PhysicsWorld::createEdgeBox(const sf::Vec
 }
 
 
+std::shared_ptr<gbh::PhysicsBody> gbh::PhysicsWorld::createEdgeList(const std::vector<sf::Vector2f> vertices, const PhysicsMaterial& material)
+{
+    std::shared_ptr<gbh::PhysicsBody> body = createEmptyBody();
+    body->addEdgeList(vertices, material);
+    
+    return body;
+}
+
+
 void gbh::PhysicsWorld::simulate(double deltaTime)
 {
     m_contactEvents.clear();

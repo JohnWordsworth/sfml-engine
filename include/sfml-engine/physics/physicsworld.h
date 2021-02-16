@@ -38,6 +38,7 @@ namespace gbh
         std::shared_ptr<PhysicsBody> createBox(const sf::Vector2f& size, const PhysicsMaterial& material = PhysicsMaterial());
         std::shared_ptr<PhysicsBody> createCircle(float radius, const PhysicsMaterial& material = PhysicsMaterial());
         std::shared_ptr<PhysicsBody> createEdgeBox(const sf::Vector2f& size, const PhysicsMaterial& material = PhysicsMaterial());
+        std::shared_ptr<PhysicsBody> createEdgeList(const std::vector<sf::Vector2f> vertices, const PhysicsMaterial& material = PhysicsMaterial());
         
         void simulate(double deltaTime);
         void destroy();
